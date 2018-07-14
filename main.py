@@ -26,18 +26,18 @@ def get_automatic_evaluations():
     baseline_responses = json.loads(request.get_json())['baseline_responses']
     
     automatic_evaluations = dict()
-    automatic_evaluations['avg_len'] = avg_len(model_responses)
-    automatic_evaluations['distinct_1'] = distinct_1(model_responses)
-    automatic_evaluations['distinct_2'] = distinct_2(model_responses)
-    automatic_evaluations['greed_match'] = greedy_match(model_responses, baseline_responses, w2v)
-    automatic_evaluations['extrema_score'] = extrema_score(model_responses, baseline_responses, w2v)
-    automatic_evaluations['average_embedding_score'] = average_embedding_score(model_responses, baseline_responses, w2v)
+    automatic_evaluations['avg_len'] = 1.*avg_len(model_responses)
+    automatic_evaluations['distinct_1'] = 1.*distinct_1(model_responses)
+    automatic_evaluations['distinct_2'] = 1.*distinct_2(model_responses)
+    automatic_evaluations['greed_match'] = 1.*greedy_match(model_responses, baseline_responses, w2v)[0]
+    automatic_evaluations['extrema_score'] = 1.*extrema_score(model_responses, baseline_responses, w2v)[0]
+    automatic_evaluations['average_embedding_score'] = 1.*average_embedding_score(model_responses, baseline_responses, w2v)[0]
 
     return automatic_evaluations
 
 @app.route("/auto", methods=['GET', 'POST'])
 def auto():
-    return jsonify(get_automatic_evaluations())
+    return json.dumps(get_automatic_evaluations())
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
