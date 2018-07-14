@@ -1,0 +1,6 @@
+venv/
+.vscode/
+*.pyc
+*.cpython
+__pycache__
+vectors.magnitude
