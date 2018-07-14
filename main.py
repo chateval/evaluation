@@ -21,44 +21,23 @@ app = Flask(__name__)
 vectors = Magnitude('vectors.magnitude')
 w2v = Word2Vec(vectors)
 
-@app.route("/avg_len", methods=['GET', 'POST'])
-def avg_len_route():
-    model_responses = json.loads(request.get_json())['model_responses']
-    value = avg_len(model_responses)
-    return jsonify({'name': 'Average Length', 'value': value})
-
-@app.route("/distinct_1", methods=['GET', 'POST'])
-def distinct_1_route():
-    model_responses = json.loads(request.get_json())['model_responses']
-    value = distinct_1(model_responses)
-    return jsonify({'name': 'Distinct 1', 'value': value})
-
-@app.route("/distinct_2", methods=['GET', 'POST'])
-def distinct_2_route():
-    model_responses = json.loads(request.get_json())['model_responses']
-    value = distinct_2(model_responses)
-    return jsonify({'name': 'Distinct 2', 'value': value})
-
-@app.route("/greedy_match", methods=['GET', 'POST'])
-def greedy_match_route():
+def get_automatic_evaluations():
     model_responses = json.loads(request.get_json())['model_responses']
     baseline_responses = json.loads(request.get_json())['baseline_responses']
-    value = greedy_match(model_responses, baseline_responses, w2v)
-    return jsonify({'name': 'Greedy Match', 'value': value})
+    
+    automatic_evaluations = dict()
+    automatic_evaluations['avg_len'] = avg_len(model_responses)
+    automatic_evaluations['distinct_1'] = distinct_1(model_responses)
+    automatic_evaluations['distinct_2'] = distinct_2(model_responses)
+    automatic_evaluations['greed_match'] = greedy_match(model_responses, baseline_responses, w2v)
+    automatic_evaluations['extrema_score'] = extrema_score(model_responses, baseline_responses, w2v)
+    automatic_evaluations['average_embedding_score'] = average_embedding_score(model_responses, baseline_responses, w2v)
 
-@app.route("/extrema_score", methods=['GET', 'POST'])
-def extrema_score_route():
-    model_responses = json.loads(request.get_json())['model_responses']
-    baseline_responses = json.loads(request.get_json())['baseline_responses']
-    value = extrema_score(model_responses, baseline_responses, w2v)
-    return jsonify({'name': 'Extrema Score', 'value': value})
+    return automatic_evaluations
 
-@app.route("/average_embedding_score", methods=['GET', 'POST'])
-def average_embedding_score_route():
-    model_responses = json.loads(request.get_json())['model_responses']
-    baseline_responses = json.loads(request.get_json())['baseline_responses']
-    value = average_embedding_score(model_responses, baseline_responses, w2v)
-    return jsonify({'name': 'Average Embedding Score', 'value': value})
+@app.route("/auto", methods=['GET', 'POST'])
+def auto():
+    return jsonify(get_automatic_evaluations())
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8000, debug=True)
