@@ -21,23 +21,22 @@ app = Flask(__name__)
 vectors = Magnitude('vectors.magnitude')
 w2v = Word2Vec(vectors)
 
-def get_automatic_evaluations():
-    model_responses = json.loads(request.get_json())['model_responses']
-    baseline_responses = json.loads(request.get_json())['baseline_responses']
-    
+def get_automatic_evaluations(model_responses, baseline_responses):
     automatic_evaluations = dict()
     automatic_evaluations['avg_len'] = 1.*avg_len(model_responses)
     automatic_evaluations['distinct_1'] = 1.*distinct_1(model_responses)
     automatic_evaluations['distinct_2'] = 1.*distinct_2(model_responses)
-    automatic_evaluations['greed_match'] = 1.*greedy_match(model_responses, baseline_responses, w2v)[0]
+    automatic_evaluations['greedy_match'] = 1.*greedy_match(model_responses, baseline_responses, w2v)[0]
     automatic_evaluations['extrema_score'] = 1.*extrema_score(model_responses, baseline_responses, w2v)[0]
     automatic_evaluations['average_embedding_score'] = 1.*average_embedding_score(model_responses, baseline_responses, w2v)[0]
-
     return automatic_evaluations
 
 @app.route("/auto", methods=['GET', 'POST'])
 def auto():
-    return json.dumps(get_automatic_evaluations())
+    model_responses = json.loads(request.get_json())['model_responses']
+    baseline_responses = json.loads(request.get_json())['baseline_responses']
+    print(model_responses, baseline_responses)
+    return json.dumps(get_automatic_evaluations(model_responses, baseline_responses))
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8001, debug=True)
