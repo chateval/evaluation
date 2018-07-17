@@ -1,4 +1,4 @@
-import json
+import json, os
 from flask import Flask, request, jsonify
 from pymagnitude import Magnitude
 from auto import avg_len, distinct_1, distinct_2, greedy_match, extrema_score, average_embedding_score
@@ -18,7 +18,7 @@ class Word2Vec:
         return self.vectors.dim
  
 app = Flask(__name__)
-vectors = Magnitude('vectors.magnitude')
+vectors = Magnitude(os.environ['EMBEDDING_FILE'])
 w2v = Word2Vec(vectors)
 
 def get_automatic_evaluations(model_responses, baseline_responses):
