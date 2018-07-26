@@ -12,3 +12,4 @@ pymagnitude==0.1.46
 six==1.11.0
 Werkzeug==0.14.1
 xxhash==1.2.0
+gunicorn

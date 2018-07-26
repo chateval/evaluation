@@ -4,3 +4,4 @@ venv/
 *.cpython
 __pycache__
 vectors.magnitude
+.env
