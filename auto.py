@@ -21,8 +21,6 @@ def avg_len(lines):
   return(len([w for s in lines for w in s.strip().split()])/len(lines))
 
 def bleu(target_lines, gt_lines):
-  print(gt_lines)
-  print(len(gt_lines))
   from nltk.translate.bleu_score import sentence_bleu
   avg_bleu = 0
   num_refs = len(gt_lines)

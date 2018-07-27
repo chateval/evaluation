@@ -29,24 +29,13 @@ def get_automatic_evaluations(model_responses, baseline_responses):
     automatic_evaluations['greedy_match'] = 1.*greedy_match(model_responses, baseline_responses, w2v)[0]
     automatic_evaluations['extrema_score'] = 1.*extrema_score(model_responses, baseline_responses, w2v)[0]
     automatic_evaluations['average_embedding_score'] = 1.*average_embedding_score(model_responses, baseline_responses, w2v)[0]
-<<<<<<< HEAD
-    automatic_evaluations['bleu'] = 1.*bleu(model_responses, baseline_responses)[0]
-=======
-    automatic_evaluations['bleu'] = 1.*1
->>>>>>> 8e4f27b269b55db75aa07f9ef6244f4dde4e28f6
+    automatic_evaluations['bleu'] = 1.*bleu(model_responses, [baseline_responses])
     return automatic_evaluations
 
 @app.route("/auto", methods=['GET', 'POST'])
 def auto():
     model_responses = json.loads(request.get_json())['model_responses']
     baseline_responses = json.loads(request.get_json())['baseline_responses']
-<<<<<<< HEAD
-    print(model_responses, baseline_responses)
-    print(len(model_responses))
-    print(len(baseline_responses))
-=======
-    print(len(model_responses), len(baseline_responses))
->>>>>>> 8e4f27b269b55db75aa07f9ef6244f4dde4e28f6
     return json.dumps(get_automatic_evaluations(model_responses, baseline_responses))
 
 
