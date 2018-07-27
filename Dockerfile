@@ -1,4 +1,5 @@
 FROM python:3
+ENV EMBEDDING_FILE='vectors.magnitude'
 ADD . /
 WORKDIR /
 ADD requirements.txt /
