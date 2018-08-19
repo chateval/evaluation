@@ -108,7 +108,7 @@ def greedy_match(r1, r2, w2v):
 
 
 def greedy_score(r1, r2, w2v):
-  dim = w2v.layer1_size  # embedding dimensions
+  dim =int(w2v.dim())  # embedding dimensions
 
   scores = []
 
@@ -195,7 +195,7 @@ def extrema_score(r1, r2, w2v):
 
 
 def average_embedding_score(r1, r2, w2v):
-  dim = w2v.layer1_size  # dimension of embeddings
+  dim = int(w2v.dim())  # dimension of embeddings
 
   scores = []
 
