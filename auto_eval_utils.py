@@ -228,5 +228,3 @@ def average_embedding_score(r1, r2, w2v):
 
   scores = np.asarray(scores)
   return np.mean(scores), 1.96*np.std(scores)/float(len(scores)), np.std(scores)
-
-
