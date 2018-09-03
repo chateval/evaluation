@@ -1,7 +1,7 @@
 import json, os
 from flask import Flask, request, jsonify
 from pymagnitude import Magnitude
-from auto import avg_len, distinct_1, distinct_2, greedy_match, extrema_score, average_embedding_score, bleu
+from auto_eval_utils import avg_len, distinct_1, distinct_2, greedy_match, extrema_score, average_embedding_score, bleu
 
 class Word2Vec:
     def __init__(self, vectors):

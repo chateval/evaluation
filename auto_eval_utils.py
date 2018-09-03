@@ -1,11 +1,24 @@
+from random import randint
+from gensim.models import Word2Vec
 import numpy as np
 
+
 def distinct_1(lines):
+  '''Computes the number of distinct words divided by the total number of words.
+
+  Input:
+  lines: List of strings.
+  '''
   words = ' '.join(lines).split(' ')
   num_distinct_words = len(set(words))
   return float(num_distinct_words) / len(words)
 
 def distinct_2(lines):
+  '''Computes the number of distinct bigrams divided by the total number of words.
+
+  Input:
+  lines: List of strings.
+  '''
   all_bigrams = []
   num_words = 0
 
@@ -18,23 +31,73 @@ def distinct_2(lines):
   return len(set(all_bigrams)) / float(num_words)
 
 def avg_len(lines):
+  '''Computes the average line length.
+
+  Input:
+  lines: List of strings.
+  '''
   return(len([w for s in lines for w in s.strip().split()])/len(lines))
 
-def bleu(target_lines, gt_lines):
+def bleu(target_lines, gt_lines, DEBUG=False):
+  '''Computes the average BLEU score.
+  
+  Input:
+  target_lines: List of lines produced by the model.
+  gt_lines: List of ground-truth lines corresponding to each line produced by the model.
+  '''
+
+  # This import is in here because it is really slow, so only do it if we have to.
   from nltk.translate.bleu_score import sentence_bleu
+
   avg_bleu = 0
   num_refs = len(gt_lines)
-
   for i in range(len(target_lines)):
     ref = []
     for r in range(num_refs):
       ref.append(gt_lines[r][i].lower().split())
     hyp = target_lines[i].lower().split()
+  
     bleu = sentence_bleu(ref, hyp, weights = (0.5, 0.5))
+    if DEBUG == 2:
+      print('CAND: ',target_lines[i])
+      print('GT  : ',gt_lines[0][i])
+      print('BLEU:', bleu)
+
+    
     avg_bleu += bleu
   avg_bleu = avg_bleu / len(target_lines)
+  return((avg_bleu))
 
-  return(avg_bleu)
+"""
+Everything below this comment was borrowed from https://github.com/julianser/hed-dlg-truncated/blob/master/Evaluation/embedding_metrics.py
+(with some slight modifications)
+
+Word embedding based evaluation metrics for dialogue.
+
+This method implements three evaluation metrics based on Word2Vec word embeddings, which compare a target utterance with a model utterance:
+1) Computing cosine-similarity between the mean word embeddings of the target utterance and of the model utterance
+2) Computing greedy meatching between word embeddings of target utterance and model utterance (Rus et al., 2012)
+3) Computing word embedding extrema scores (Forgues et al., 2014)
+
+We believe that these metrics are suitable for evaluating dialogue systems.
+
+Example run:
+
+    python embedding_metrics.py path_to_ground_truth.txt path_to_predictions.txt path_to_embeddings.bin
+
+The script assumes one example per line (e.g. one dialogue or one sentence per line), where line n in 'path_to_ground_truth.txt' matches that of line n in 'path_to_predictions.txt'.
+
+NOTE: The metrics are not symmetric w.r.t. the input sequences. 
+      Therefore, DO NOT swap the ground truths with the predicted responses.
+
+References:
+
+A Comparison of Greedy and Optimal Assessment of Natural Language Student Input Word Similarity Metrics Using Word to Word Similarity Metrics. Vasile Rus, Mihai Lintean. 2012. Proceedings of the Seventh Workshop on Building Educational Applications Using NLP, NAACL 2012.
+
+Bootstrapping Dialog Systems with Word Embeddings. G. Forgues, J. Pineau, J. Larcheveque, R. Tremblay. 2014. Workshop on Modern Machine Learning and Natural Language Processing, NIPS 2014.
+
+
+"""
 
 def greedy_match(r1, r2, w2v):
   res1 = greedy_score(r1, r2, w2v)
@@ -43,8 +106,10 @@ def greedy_match(r1, r2, w2v):
 
   return np.mean(res_sum), 1.96*np.std(res_sum)/float(len(res_sum)), np.std(res_sum)
 
+
 def greedy_score(r1, r2, w2v):
-  dim = int(w2v.dim())
+  dim =int(w2v.dim())  # embedding dimensions
+
   scores = []
 
   for i in range(len(r1)):
@@ -55,7 +120,6 @@ def greedy_score(r1, r2, w2v):
     x_count = 0
     o = 0.0
     Y = np.zeros((dim,1))
-
     for tok in tokens2:
       if tok in w2v:
         Y = np.hstack((Y,(w2v[tok].reshape((dim,1)))))
@@ -67,6 +131,7 @@ def greedy_score(r1, r2, w2v):
         o += np.max(tmp)
         x_count += 1
 
+    # if none of the words in response or ground truth have embeddings, count result as zero
     if x_count < 1 or y_count < 1:
       scores.append(0)
       continue
@@ -92,9 +157,11 @@ def extrema_score(r1, r2, w2v):
       if tok in w2v:
         Y.append(w2v[tok])
 
+    # if none of the words have embeddings in ground truth, skip
     if np.linalg.norm(X) < 0.00000000001:
       continue
 
+    # if none of the words have embeddings in response, count result as zero
     if np.linalg.norm(Y) < 0.00000000001:
       scores.append(0)
       continue
@@ -128,7 +195,7 @@ def extrema_score(r1, r2, w2v):
 
 
 def average_embedding_score(r1, r2, w2v):
-  dim = w2v.dim()
+  dim = int(w2v.dim())  # dimension of embeddings
 
   scores = []
 
@@ -161,3 +228,5 @@ def average_embedding_score(r1, r2, w2v):
 
   scores = np.asarray(scores)
   return np.mean(scores), 1.96*np.std(scores)/float(len(scores)), np.std(scores)
+
+
