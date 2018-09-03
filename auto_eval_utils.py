@@ -1,7 +1,5 @@
 from random import randint
-from gensim.models import Word2Vec
 import numpy as np
-
 
 def distinct_1(lines):
   '''Computes the number of distinct words divided by the total number of words.
