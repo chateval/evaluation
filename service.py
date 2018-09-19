@@ -46,6 +46,8 @@ def auto():
     else:
         baseline_responses = list()
 
+    print(len(model_responses), len(baseline_responses))
+
     return json.dumps(get_automatic_evaluations(model_responses, baseline_responses, parameters['is_baseline']))
 
 if __name__ == "__main__":

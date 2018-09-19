@@ -110,7 +110,7 @@ def greedy_score(r1, r2, w2v):
 
   scores = []
 
-  for i in range(len(r1)):
+  for i in range(min(len(r1), len(r2))):
     tokens1 = r1[i].strip().split(" ")
     tokens2 = r2[i].strip().split(" ")
     X= np.zeros((dim,))
@@ -143,7 +143,7 @@ def greedy_score(r1, r2, w2v):
 def extrema_score(r1, r2, w2v):
   scores = []
 
-  for i in range(len(r1)):
+  for i in range(min(len(r1), len(r2))):
     tokens1 = r1[i].strip().split(" ")
     tokens2 = r2[i].strip().split(" ")
     X= []
@@ -197,7 +197,7 @@ def average_embedding_score(r1, r2, w2v):
 
   scores = []
 
-  for i in range(len(r1)):
+  for i in range(min(len(r1), len(r2))):
     tokens1 = r1[i].strip().split(" ")
     tokens2 = r2[i].strip().split(" ")
     X= np.zeros((dim,))
